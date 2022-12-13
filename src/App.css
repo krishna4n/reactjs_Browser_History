@@ -91,3 +91,9 @@ body {
   justify-self: flex-end;
   height: 20px;
 }
+
+.delete-button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}

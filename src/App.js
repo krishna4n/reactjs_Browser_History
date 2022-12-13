@@ -1,5 +1,6 @@
 import {Component} from 'react'
 import './App.css'
+import Item from './Item'
 
 // These are the list used in the application. You can move them to any component needed.
 const initialHistoryList = [
@@ -79,21 +80,25 @@ const initialHistoryList = [
 
 // Replace your code here
 class App extends Component {
-  state = {searchInput: ''}
-
-  searchedListItems: initialHistoryList
+  state = {updatedList: initialHistoryList, searchedInput: ''}
 
   searchedItems = event => {
     this.setState({
-      searchInput: event.target.value,
+      searchedInput: event.target.value,
+    })
+  }
+
+  itemDeleted = id => {
+    const {updatedList} = this.state
+    this.setState({
+      updatedList: updatedList.filter(each => each.id !== id),
     })
   }
 
   render() {
-    const {searchInput} = this.state
-
-    const searchedListItems = initialHistoryList.filter(eachItem =>
-      eachItem.title.toLowerCase().includes(searchInput.toLowerCase()),
+    const {updatedList, searchedInput} = this.state
+    const searchedListItem = updatedList.filter(each =>
+      each.title.toLowerCase().includes(searchedInput.toLowerCase()),
     )
 
     return (
@@ -114,7 +119,7 @@ class App extends Component {
             </div>
             <input
               type="search"
-              value={searchInput}
+              value={searchedInput}
               className="search-input"
               onChange={this.searchedItems}
               placeholder="Search History"
@@ -122,30 +127,22 @@ class App extends Component {
           </div>
         </div>
         <div className="card-container">
-          <ul className="card">
-            {searchedListItems.map(eachItem => (
-              <li className="item" key={eachItem.id}>
-                <p className="time">{eachItem.timeAccessed}</p>
-                <div className="domain-details">
-                  <img
-                    src={eachItem.logoUrl}
-                    alt="domain logo"
-                    className="domain-logo"
-                  />
-                  <p className="title">{eachItem.title}</p>
-                  <p className="domain-url">{eachItem.domainUrl}</p>
-                </div>
-
-                <img
-                  src="https://assets.ccbp.in/frontend/react-js/delete-img.png"
-                  alt="delete"
-                  className="delete-icon"
-                  onClick={this.deleteItem}
+          {searchedListItem.length > 0 && (
+            <ul className="card">
+              {searchedListItem.map(eachItem => (
+                <Item
                   key={eachItem.id}
+                  item={eachItem}
+                  itemDeleted={this.itemDeleted}
                 />
-              </li>
-            ))}
-          </ul>
+              ))}
+            </ul>
+          )}
+          {searchedListItem.length === 0 && (
+            <div>
+              <p>There is no history to show</p>
+            </div>
+          )}
         </div>
       </div>
     )
